@@ -7,7 +7,7 @@ subtitle: Presentation
 
 ## Sub-slide
 
-Some text
+Some text and a [link](https://blog.amy-k.net)
 
 # Slide 2
 

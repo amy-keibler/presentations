@@ -1,0 +1,10 @@
+:root {
+    --r-background-color: #ebd6fe;
+    --r-main-color: #000000;
+    --r-heading-color: #7020ba;
+    --r-link-color: #823dc2;
+    --r-link-color-dark: #1a53a1;
+    --r-link-color-hover: #7020ba;
+    --r-selection-background-color: #ebd6ff;
+    --r-selection-color: #000000;
+}

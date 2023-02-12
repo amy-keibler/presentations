@@ -6,32 +6,43 @@
   };
 
   outputs = { self, nixpkgs, utils }:
-    utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages."${system}";
-    in rec {
-      packages.examplePresentation = pkgs.stdenvNoCC.mkDerivation rec {
-        name = "example_presentation";
-        src = ./example;
-        buildInputs = [ pkgs.pandoc ];
-        phases = ["unpackPhase" "buildPhase" "installPhase"];
-        buildPhase = ''
-          pandoc \
-            --standalone \
-            --slide-level=2 \
-            --to=revealjs \
-            --out=example_presentation.html \
-            example_presentation.md
-        '';
-        installPhase = ''
-          mkdir -p $out
-          cp example_presentation.html $out/
-        '';
-      };
+    utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages."${system}";
+        pandocPresentation = { presentationName, sourceFiles }: pkgs.stdenvNoCC.mkDerivation rec {
+          name = presentationName;
+          src = sourceFiles;
+          buildInputs = [ pkgs.pandoc ];
+          phases = [ "unpackPhase" "buildPhase" "installPhase" ];
+          buildPhase = ''
+            pandoc \
+              --standalone \
+              --embed-resources \
+              --slide-level=2 \
+              --variable=theme:white \
+              --css=${./theme/slides-style.css} \
+              --highlight-style ${./theme/code-style.theme} \
+              --to=revealjs \
+              --out=${presentationName}.html \
+              ${presentationName}.md
+          '';
+          installPhase = ''
+            mkdir -p $out
+            cp example_presentation.html $out/
+          '';
+        };
+      in
+      rec {
+        packages.examplePresentation = pandocPresentation {
+          presentationName = "example_presentation";
+          sourceFiles = ./example;
+        };
 
-      devShells.default = pkgs.mkShell {
-        packages = with pkgs; [
-          nixpkgs-fmt
-        ];
-      };
-    });
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            pandoc
+            nixpkgs-fmt
+          ];
+        };
+      });
 }
