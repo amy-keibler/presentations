@@ -16,3 +16,7 @@ fun add(x: i32, y: i32) -> i32 {
   x + y
 }
 ```
+
+# Slide 3
+
+![My cat, Arya, looking out a window](./cat.png)

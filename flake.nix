@@ -9,9 +9,9 @@
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages."${system}";
-        pandocPresentation = { presentationName, sourceFiles }: pkgs.stdenvNoCC.mkDerivation rec {
-          name = presentationName;
-          src = sourceFiles;
+        pandocPresentation = { name, src }: pkgs.stdenvNoCC.mkDerivation {
+          name = name;
+          src = src;
           buildInputs = [ pkgs.pandoc ];
           phases = [ "unpackPhase" "buildPhase" "installPhase" ];
           buildPhase = ''
@@ -23,19 +23,19 @@
               --css=${./theme/slides-style.css} \
               --highlight-style ${./theme/code-style.theme} \
               --to=revealjs \
-              --out=${presentationName}.html \
-              ${presentationName}.md
+              --out=${name}.html \
+              ${name}.md
           '';
           installPhase = ''
             mkdir -p $out
-            cp example_presentation.html $out/
+            cp ${name}.html $out/
           '';
         };
       in
       rec {
-        packages.examplePresentation = pandocPresentation {
-          presentationName = "example_presentation";
-          sourceFiles = ./example;
+        packages.example = pandocPresentation {
+          name = "example_presentation";
+          src = ./example;
         };
 
         devShells.default = pkgs.mkShell {
